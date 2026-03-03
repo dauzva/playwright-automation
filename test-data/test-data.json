@@ -1,0 +1,54 @@
+{
+  "users": [
+    {
+      "id": "user_001",
+      "firstName": "Alice",
+      "lastName": "Tester",
+      "email": "alice.tester@mailtest.dev",
+      "password": "Secure@1234",
+      "gender": "Female",
+      "company": "TestCorp"
+    },
+    {
+      "id": "user_002",
+      "firstName": "Bob",
+      "lastName": "Automation",
+      "email": "bob.automation@mailtest.dev",
+      "password": "Secure@5678",
+      "gender": "Male",
+      "company": "AutoQA Ltd"
+    }
+  ],
+  "shippingAddress": {
+    "firstName": "Alice",
+    "lastName": "Tester",
+    "email": "alice.tester@mailtest.dev",
+    "company": "TestCorp",
+    "country": "United States",
+    "countryId": "1",
+    "state": "California",
+    "city": "Los Angeles",
+    "address1": "123 Automation Street",
+    "address2": "Suite 42",
+    "zip": "90001",
+    "phone": "+1-555-0100"
+  },
+  "priceThreshold": 900,
+  "categories": [
+    "/computers/desktops",
+    "/computers/notebooks",
+    "/electronics/cell-phones",
+    "/electronics/camera-photo",
+    "/apparel-shoes"
+  ],
+  "webTableRows": [
+    { "firstName": "Ciara",   "lastName": "Vance",    "age": 28, "email": "ciara@test.com",   "salary": 52000, "department": "QA" },
+    { "firstName": "Derek",   "lastName": "Mills",    "age": 34, "email": "derek@test.com",   "salary": 67000, "department": "Engineering" },
+    { "firstName": "Elaine",  "lastName": "Parker",   "age": 22, "email": "elaine@test.com",  "salary": 41000, "department": "Design" },
+    { "firstName": "Frank",   "lastName": "Newton",   "age": 41, "email": "frank@test.com",   "salary": 88000, "department": "Management" },
+    { "firstName": "Grace",   "lastName": "Huang",    "age": 29, "email": "grace@test.com",   "salary": 55000, "department": "DevOps" },
+    { "firstName": "Hector",  "lastName": "Ortiz",    "age": 37, "email": "hector@test.com",  "salary": 72000, "department": "Sales" },
+    { "firstName": "Iris",    "lastName": "Bloom",    "age": 25, "email": "iris@test.com",    "salary": 48000, "department": "Marketing" },
+    { "firstName": "Julian",  "lastName": "Cross",    "age": 31, "email": "julian@test.com",  "salary": 63000, "department": "Finance" }
+  ]
+}

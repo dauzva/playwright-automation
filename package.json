@@ -1,0 +1,25 @@
+{
+  "name": "playwright-automation-suite",
+  "version": "1.0.0",
+  "description": "Complete Playwright + TypeScript test automation suite for demowebshop & demoqa",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:exercise1": "npx playwright test tests/exercise1/",
+    "test:exercise2": "npx playwright test tests/exercise2/",
+    "test:exercise3": "npx playwright test tests/exercise3/",
+    "test:exercise4": "npx playwright test tests/exercise4/",
+    "test:headed": "npx playwright test --headed",
+    "report": "npx playwright show-report",
+    "schedule": "ts-node tests/exercise4/ex4-task2-scheduler.ts"
+  },
+  "dependencies": {
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^20.12.0",
+    "@types/node-cron": "^3.0.11",
+    "typescript": "^5.4.5",
+    "ts-node": "^10.9.2"
+  }
+}
