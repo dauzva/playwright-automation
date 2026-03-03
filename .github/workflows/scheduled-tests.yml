@@ -1,0 +1,170 @@
+name: 🧪 Playwright Automated Tests – Scheduled & On-Demand
+
+# ─── TRIGGERS ─────────────────────────────────────────────────────────────────
+on:
+  # Scheduled execution – no human intervention required
+  # Runs every day at 08:00 UTC
+  schedule:
+    - cron: '0 8 * * *'       # Daily at 08:00 UTC
+    - cron: '0 20 * * 1-5'    # Weekdays at 20:00 UTC (nightly regression)
+
+  # Manual trigger – allows on-demand runs from GitHub UI
+  workflow_dispatch:
+    inputs:
+      exercise:
+        description: 'Which exercise to run (all / exercise1 / exercise2 / exercise3 / exercise4)'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - exercise1
+          - exercise2
+          - exercise3
+          - exercise4
+      headed:
+        description: 'Run in headed mode (for debugging)'
+        required: false
+        default: 'false'
+        type: boolean
+
+  # Run on push to main branch
+  push:
+    branches: [ main, master ]
+
+  # Run on PRs to main
+  pull_request:
+    branches: [ main, master ]
+
+# ─── ENVIRONMENT ──────────────────────────────────────────────────────────────
+env:
+  NODE_VERSION: '20'
+  # Disable headed mode in CI (always headless)
+  PWHEADED: ''
+
+# ─── JOBS ─────────────────────────────────────────────────────────────────────
+jobs:
+  playwright-tests:
+    name: 🎭 Playwright Tests (${{ github.event.inputs.exercise || 'all' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      # ── 1. Checkout repository ─────────────────────────────────────────
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Set up Node.js ─────────────────────────────────────────────
+      - name: 🟢 Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      # ── 3. Install npm dependencies ───────────────────────────────────
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      # ── 4. Install Playwright browsers ────────────────────────────────
+      - name: 🌐 Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      # ── 5. Verify test data files exist ───────────────────────────────
+      - name: 🗂️ Verify test data files
+        run: |
+          echo "Checking test data files..."
+          ls -la test-data/
+          cat test-data/users.csv
+          echo "✅ Test data files OK"
+
+      # ── 6. Run Playwright tests ────────────────────────────────────────
+      - name: 🧪 Run Playwright tests
+        id: run-tests
+        run: |
+          EXERCISE="${{ github.event.inputs.exercise || 'all' }}"
+          echo "Running exercise: $EXERCISE"
+          
+          if [ "$EXERCISE" = "all" ]; then
+            npx playwright test --reporter=html,list,json
+          else
+            npx playwright test tests/$EXERCISE/ --reporter=html,list,json
+          fi
+        env:
+          # Pass any secrets as environment variables
+          BASE_URL: 'https://demowebshop.tricentis.com'
+        # Don't fail the workflow immediately – collect results first
+        continue-on-error: true
+
+      # ── 7. Upload HTML report as artifact (PROOF OF EXECUTION) ────────
+      - name: 📊 Upload HTML Test Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-html-report-${{ github.run_id }}-${{ github.run_attempt }}
+          path: playwright-report/
+          retention-days: 30
+
+      # ── 8. Upload JSON results as artifact ────────────────────────────
+      - name: 📋 Upload JSON Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-json-${{ github.run_id }}
+          path: test-results/
+          retention-days: 30
+
+      # ── 9. Upload screenshots/videos on failure ───────────────────────
+      - name: 🖼️ Upload failure screenshots & videos
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: failure-artifacts-${{ github.run_id }}
+          path: |
+            test-results/**/*.png
+            test-results/**/*.webm
+          retention-days: 7
+
+      # ── 10. Print run summary ─────────────────────────────────────────
+      - name: 📝 Print execution summary
+        if: always()
+        run: |
+          echo "════════════════════════════════════════"
+          echo "📅 Run date:    $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "🔑 Run ID:      ${{ github.run_id }}"
+          echo "🔀 Trigger:     ${{ github.event_name }}"
+          echo "📌 Branch:      ${{ github.ref_name }}"
+          echo "📦 Exercise:    ${{ github.event.inputs.exercise || 'all' }}"
+          echo "════════════════════════════════════════"
+          
+          # Check if JSON results exist and print summary
+          if [ -f "test-results/results.json" ]; then
+            echo "📊 Test Results Summary:"
+            node -e "
+              const r = require('./test-results/results.json');
+              console.log('  Total:   ' + r.stats.expected);
+              console.log('  Passed:  ' + r.stats.expected);
+              console.log('  Failed:  ' + (r.stats.unexpected || 0));
+              console.log('  Skipped: ' + (r.stats.skipped || 0));
+            " 2>/dev/null || echo "  (JSON summary unavailable)"
+          fi
+
+      # ── 11. Fail the job if tests failed ──────────────────────────────
+      - name: ❌ Fail if tests failed
+        if: steps.run-tests.outcome == 'failure'
+        run: exit 1
+
+  # ── Notification job (optional) ───────────────────────────────────────────
+  notify:
+    name: 📬 Notify on Completion
+    runs-on: ubuntu-latest
+    needs: playwright-tests
+    if: always() && github.event_name == 'schedule'
+    steps:
+      - name: 📬 Scheduled run status
+        run: |
+          STATUS="${{ needs.playwright-tests.result }}"
+          echo "Scheduled test run completed with status: $STATUS"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Report artifact: playwright-html-report-${{ github.run_id }}-1"
+          # Add Slack/Teams/email notification here if needed
+          # e.g.: curl -X POST "$SLACK_WEBHOOK" -d "{\"text\":\"Tests $STATUS\"}"
