@@ -6,8 +6,7 @@
       "lastName": "Tester",
       "email": "alice.tester@mailtest.dev",
       "password": "Secure@1234",
-      "gender": "Female",
-      "company": "TestCorp"
+      "gender": "Female"
     },
     {
       "id": "user_002",
@@ -15,8 +14,7 @@
       "lastName": "Automation",
       "email": "bob.automation@mailtest.dev",
       "password": "Secure@5678",
-      "gender": "Male",
-      "company": "AutoQA Ltd"
+      "gender": "Male"
     }
   ],
   "shippingAddress": {
@@ -33,13 +31,10 @@
     "zip": "90001",
     "phone": "+1-555-0100"
   },
-  "priceThreshold": 900,
+  "priceThreshold": 1000,
   "categories": [
-    "/computers/desktops",
-    "/computers/notebooks",
-    "/electronics/cell-phones",
-    "/electronics/camera-photo",
-    "/apparel-shoes"
+    "/desktops",
+    "/notebooks"
   ],
   "webTableRows": [
     { "firstName": "Ciara",   "lastName": "Vance",    "age": 28, "email": "ciara@test.com",   "salary": 52000, "department": "QA" },

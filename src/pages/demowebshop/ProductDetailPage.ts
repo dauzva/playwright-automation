@@ -11,6 +11,7 @@ export class ProductDetailPage {
   readonly productName: Locator;
   readonly productPrice: Locator;
   readonly addToCartButton: Locator;
+  readonly attributeSelectors: Locator;
   readonly successNotification: Locator;
 
   constructor(page: Page) {
@@ -18,6 +19,7 @@ export class ProductDetailPage {
     this.productName        = page.locator('.product-name h1');
     this.productPrice       = page.locator('.product-price span');
     this.addToCartButton    = page.locator('#add-to-cart-button-\\d+, input[value="Add to cart"]').first();
+	this.attributeSelectors = page.locator('.attributes').last();
     this.successNotification = page.locator('.bar-notification.success');
   }
 
@@ -48,6 +50,10 @@ export class ProductDetailPage {
    * the first available button is clicked with default selections.
    */
   async addToCart(): Promise<void> {
+	if (await this.attributeSelectors.isVisible()) {
+	  // If product has required attributes, we need to configure it first
+	  await this.configureProduct();
+	}
     // Click the first visible "Add to cart" button
     const btn = this.page.locator('input[value="Add to cart"]').first();
     await btn.waitFor({ state: 'visible' });
@@ -66,4 +72,22 @@ export class ProductDetailPage {
     const requiredOptions = this.page.locator('.required-options-warning');
     return await requiredOptions.isVisible();
   }
+
+  async configureProduct(): Promise<void> {
+	const attributeGroups = this.attributeSelectors.locator('dd');
+	const count = await attributeGroups.count();
+	for (let i = 0; i < count; i++) {
+	  const group = attributeGroups.nth(i);
+	  const firstOption = group.locator('input[type="radio"], select').first();
+	  if (await firstOption.isVisible()) {
+		const tag = await firstOption.evaluate(el => el.tagName.toLowerCase());
+		if (tag === 'input') {
+		  await firstOption.check();
+		} else if (tag === 'select') {
+		  await firstOption.selectOption({ index: 1 });
+		}
+	  }
+	}
+  }
+  
 }

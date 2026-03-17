@@ -1,3 +1,3 @@
-id,firstName,lastName,email,password,gender,company
-user_001,Alice,Tester,alice.tester@mailtest.dev,Secure@1234,Female,TestCorp
-user_002,Bob,Automation,bob.automation@mailtest.dev,Secure@5678,Male,AutoQA Ltd
+id,firstName,lastName,email,password,gender
+user_001,Alice,Tester,alice.tester@mailtest.dev,Secure@1234,Female
+user_002,Bob,Automation,bob.automation@mailtest.dev,Secure@5678,Male

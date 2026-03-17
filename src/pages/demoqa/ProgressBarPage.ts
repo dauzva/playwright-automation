@@ -18,22 +18,7 @@ export class ProgressBarPage {
     // Button toggles between "Start" and "Stop"
     this.startStopButton = page.locator('#startStopButton');
     this.resetButton     = page.locator('#resetButton');
-    this.progressBar     = page.locator('#progressBar');
-  }
-
-  async goto(): Promise<void> {
-    await this.page.goto('https://demoqa.com/progress-bar');
-    await this.page.waitForLoadState('networkidle');
-    await this.dismissAds();
-  }
-
-  private async dismissAds(): Promise<void> {
-    try {
-      const adClose = this.page.locator('#close-fixedban');
-      if (await adClose.isVisible({ timeout: 2000 })) {
-        await adClose.click();
-      }
-    } catch { /* no ad */ }
+    this.progressBar     = page.locator('#progressBar div[role="progressbar"]');
   }
 
   /** Get the current progress value (0-100) */
@@ -49,41 +34,24 @@ export class ProgressBarPage {
 
   /** Click the Reset button */
   async clickReset(): Promise<void> {
-    await this.resetButton.waitFor({ state: 'visible' });
     await this.resetButton.click();
-    // Wait for bar to reset to 0
-    await this.waitForProgress(0);
   }
 
   /**
-   * Wait (without sleep) until the progress bar reaches EXACTLY the given value.
+   * Wait (without sleep) until the progress bar reaches the given value.
    * Uses page.waitForFunction() to poll the DOM attribute.
    */
-  async waitForProgress(targetValue: number, timeout = 60_000): Promise<void> {
-    await this.page.waitForFunction(
-      (target: number) => {
-        const bar = document.querySelector('#progressBar');
-        if (!bar) return false;
-        return parseInt(bar.getAttribute('aria-valuenow') ?? '0', 10) >= target;
-      },
-      targetValue,
-      { timeout },
-    );
-  }
-
-  /**
-   * Wait until progress bar reaches exactly 100 and the "Reset" button appears.
-   */
-  async waitForCompletion(timeout = 60_000): Promise<void> {
-    await this.page.waitForFunction(
-      () => {
-        const bar = document.querySelector('#progressBar');
-        return bar && parseInt(bar.getAttribute('aria-valuenow') ?? '0', 10) === 100;
-      },
-      undefined,
-      { timeout },
-    );
-  }
+	async waitForProgress(targetPercent: number, timeout = 30_000): Promise<void> {
+	await this.page.waitForFunction(
+		(target: number) => {
+		const bar = document.querySelector('[role="progressbar"]');
+		if (!bar) return false;
+		return Number(bar.getAttribute('aria-valuenow')) >= target;
+		},
+		targetPercent,
+		{ timeout }
+	);
+	}
 
   /** Assert that the current progress value equals expectedValue */
   async assertProgressValue(expectedValue: number): Promise<void> {

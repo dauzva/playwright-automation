@@ -63,8 +63,7 @@ export class DataReader {
       lastName:   r['lastName'],
       email:      r['email'],
       password:   r['password'],
-      gender:     r['gender'] as 'Male' | 'Female',
-      company:    r['company'],
+      gender:     r['gender'] as 'Male' | 'Female'
     }));
   }
 }
@@ -78,14 +77,12 @@ export interface TestUser {
   email: string;
   password: string;
   gender: string;
-  company: string;
 }
 
 export interface ShippingAddress {
   firstName: string;
   lastName: string;
   email: string;
-  company: string;
   country: string;
   countryId: string;
   state: string;
@@ -120,5 +117,4 @@ export interface CSVUser {
   email: string;
   password: string;
   gender: 'Male' | 'Female';
-  company: string;
 }

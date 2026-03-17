@@ -7,7 +7,7 @@
 | Attribute             | Value                                                      |
 |-----------------------|------------------------------------------------------------|
 | **Test Case ID**      | TC-001                                                     |
-| **Title**             | E-Commerce End-to-End Happy Path – Cart Items > $900       |
+| **Title**             | E-Commerce End-to-End Happy Path – Cart Items > $1000       |
 | **Module / Feature**  | Registration · Login · Browse · Cart · Checkout · Order    |
 | **Target Application**| https://demowebshop.tricentis.com/                        |
 | **Priority**          | High                                                       |
@@ -30,7 +30,7 @@
 | Email             | alice.tester_<timestamp>@mailtest.dev    |
 | Password          | Secure@1234                              |
 | Shipping Address  | 123 Automation Street, Los Angeles, CA   |
-| Price Threshold   | > $900.00 USD                            |
+| Price Threshold   | > $1000.00 USD                            |
 | Payment Method    | Check / Money Order                      |
 
 ---
@@ -49,15 +49,15 @@
 | 8      | Click "Register" submit button                                               | "Your registration completed" success message displayed               |
 | 9      | Navigate to "Computers > Notebooks" category                                 | Notebooks listing page loads with product grid                        |
 | 10     | Scan all product prices on the page                                          | Prices extracted as numeric values                                    |
-| 11     | For each product with price > $900: note the product name and URL            | At least one product with price > $900 identified                     |
+| 11     | For each product with price > $1000: note the product name and URL            | At least one product with price > $1000 identified                     |
 | 12     | Navigate to the product detail page of the first expensive product           | Product detail page loaded with name, price, and Add-to-cart button   |
 | 13     | Click "Add to cart" button                                                   | Notification "The product has been added to your shopping cart" shown |
-| 14     | Repeat steps 11–13 for all identified products > $900 (if multiple exist)   | All eligible products added to cart; cart count increases             |
+| 14     | Repeat steps 11–13 for all identified products > $1000 (if multiple exist)   | All eligible products added to cart; cart count increases             |
 | 15     | Navigate to "Computers > Desktops" category and repeat steps 10–14           | Additional expensive desktops (if any) added to cart                  |
 | 16     | Click the shopping cart icon / "Shopping cart" link                          | Cart page shows all added items with names, quantities, and prices    |
 | 17     | **VERIFY** cart item count matches the number of products added              | Cart count in header == number of added items                         |
 | 18     | **VERIFY (ARITHMETIC)** sum of individual item subtotals equals order total  | Σ(unitPrice × qty) == displayed Sub-Total (within $0.01 tolerance)    |
-| 19     | **VERIFY** every item in cart has price > $900                               | Each listed price is > 900.00                                         |
+| 19     | **VERIFY** every item in cart has price > $1000                               | Each listed price is > 1000.00                                         |
 | 20     | Check "I agree to the Terms of Service" checkbox                             | Checkbox is checked                                                   |
 | 21     | Click "Checkout" button                                                      | Checkout page opens with Billing Address step                         |
 | 22     | Fill in billing address (Name, Address, City, State, ZIP, Phone)             | All fields populated                                                  |

@@ -53,7 +53,9 @@ export class ProductListPage {
       const href = (await titleAnchor.getAttribute('href')) ?? '';
 
       // Does this listing item have a direct "Add to cart" button?
-      const addToCartBtn = item.locator('.button-2.product-box-add-to-cart-button');
+	  const addToCartBtn = item.locator('.button-2.product-box-add-to-cart-button');
+	  if (!(await addToCartBtn.isVisible())) continue;
+
       const hasDirectAddToCart = await addToCartBtn.isVisible();
 
       results.push({ name, price, url: href, hasDirectAddToCart });

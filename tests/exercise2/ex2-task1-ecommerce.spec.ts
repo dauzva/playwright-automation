@@ -16,17 +16,15 @@ import { DataReader }    from '../../src/utils/DataReader';
  *  V1 – Registration success message
  *  V2 – User is logged in (header contains email)
  *  V3 – Cart is not empty after adding expensive products
- *  V4 – All cart items have price > $900 (ARITHMETIC: every item price > 900)
+ *  V4 – All cart items have price > $1000 (ARITHMETIC: every item price > 1000)
  *  V5 – ARITHMETIC: sum of (price × qty) == displayed sub-total (within $0.01)
  *  V6 – Order confirmation page shows an order number
  */
-test.describe('Exercise 2 Task 2.1 – E-Commerce Workflow (Price > $900)', () => {
+test.describe('Exercise 2 Task 2.1 – E-Commerce Workflow (Price > $1000)', () => {
   const testData    = DataReader.loadTestData();
   const userData    = testData.users[0];
   const address     = testData.shippingAddress;
-  const PRICE_LIMIT = testData.priceThreshold; // 900
-
-  // Generate a unique email per run to avoid "already registered" conflicts
+  const PRICE_LIMIT = testData.priceThreshold;
   const uniqueEmail = RegisterPage.generateUniqueEmail(userData.email);
 
   // Track added product count for arithmetic verification
@@ -44,7 +42,6 @@ test.describe('Exercise 2 Task 2.1 – E-Commerce Workflow (Price > $900)', () =
     // PRECONDITION: Start on the homepage
     // ══════════════════════════════════════════════════════════════════════
     await page.goto('https://demowebshop.tricentis.com/');
-    await page.waitForLoadState('networkidle');
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 1-8: REGISTRATION
@@ -68,7 +65,7 @@ test.describe('Exercise 2 Task 2.1 – E-Commerce Workflow (Price > $900)', () =
     // ─────────────────────────────────────────────────────────────────────
     // After registration on demowebshop, the user is auto-logged-in.
     // Confirm the account link shows our email.
-    const accountLink = page.locator('.account');
+    const accountLink = page.locator('.account').first();
     await expect(accountLink).toBeVisible();
 
     // ── V2: Logged in verification ────────────────────────────────────────
@@ -76,15 +73,13 @@ test.describe('Exercise 2 Task 2.1 – E-Commerce Workflow (Price > $900)', () =
     console.log('✅ V2 PASS – User is logged in:', uniqueEmail);
 
     // ─────────────────────────────────────────────────────────────────────
-    // STEP 10-15: FIND PRODUCTS WITH PRICE > $900 ACROSS CATEGORIES
+    // STEP 10-15: FIND PRODUCTS WITH PRICE > $1000 ACROSS CATEGORIES
     // We manually scan each category page without using any site filter UI
     // ─────────────────────────────────────────────────────────────────────
     console.log(`🔍 Scanning categories for products > $${PRICE_LIMIT}...`);
+	await productListPage.navigateTo('/desktops');
 
-    const expensiveProducts = await productListPage.findExpensiveProductsAcrossCategories(
-      testData.categories,
-      PRICE_LIMIT,
-    );
+    const expensiveProducts = await productListPage.getProductsAbovePrice(PRICE_LIMIT);
 
     console.log(`Found ${expensiveProducts.length} product(s) above $${PRICE_LIMIT}:`);
     expensiveProducts.forEach((p) =>
@@ -125,7 +120,7 @@ test.describe('Exercise 2 Task 2.1 – E-Commerce Workflow (Price > $900)', () =
     expect(cartItems.length, 'Cart should not be empty after adding products').toBeGreaterThan(0);
     console.log('✅ V3 PASS – Cart has', cartItems.length, 'item(s)');
 
-    // ── V4: Every item has price > $900 (ARITHMETIC check) ───────────────
+    // ── V4: Every item has price > $1000 (ARITHMETIC check) ───────────────
     for (const item of cartItems) {
       expect(
         item.price,

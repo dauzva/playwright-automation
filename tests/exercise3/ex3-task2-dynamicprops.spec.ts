@@ -5,11 +5,7 @@ import { DynamicPropertiesPage } from '../../src/pages/demoqa/DynamicPropertiesP
  * Exercise 3 – Task 3.2
  * Automates TC-004: Dynamic Properties – time-based DOM state changes.
  *
- * ⚠️  ZERO thread-sleep / waitForTimeout calls – only intelligent waits:
- *     • page.waitForFunction()     (polling DOM/CSS changes)
- *     • locator.waitFor()          (visibility / enabled state)
- *
- * Verifications (≥ 2 as required):
+ * Verifications:
  *   V1 – #enableAfter is DISABLED on page load
  *   V2 – #visibleAfter is NOT visible on page load
  *   V3 – #enableAfter transitions to ENABLED after ~5 seconds
@@ -18,12 +14,15 @@ import { DynamicPropertiesPage } from '../../src/pages/demoqa/DynamicPropertiesP
  */
 test.describe('Exercise 3 Task 3.2 – Dynamic Properties', () => {
   test('TC-004: Verify time-based enable, color-change, and visibility', async ({ page }) => {
-    const dynProps = new DynamicPropertiesPage(page);
 
     // ══════════════════════════════════════════════════════════════════════
     // PRECONDITION: Navigate to Dynamic Properties page
     // ══════════════════════════════════════════════════════════════════════
-    await dynProps.goto();
+	await page.goto('https://demoqa.com');
+	await page.locator('a[href="/elements"]').click();
+	await page.locator('.router-link[href="/dynamic-properties"]').click();
+	const dynProps = new DynamicPropertiesPage(page);
+
     console.log('📄 Dynamic Properties page loaded');
 
     // ─────────────────────────────────────────────────────────────────────
@@ -46,9 +45,8 @@ test.describe('Exercise 3 Task 3.2 – Dynamic Properties', () => {
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 5: INTELLIGENT WAIT – wait until #enableAfter is ENABLED
-    // Uses waitForFunction polling (no sleep)
     // ─────────────────────────────────────────────────────────────────────
-    console.log('⏳ Waiting (conditionally) for #enableAfter to become enabled...');
+    console.log('⏳ Waiting for #enableAfter to become enabled...');
     await dynProps.waitForEnableAfterEnabled(15_000);
 
     // ─────────────────────────────────────────────────────────────────────
@@ -66,7 +64,7 @@ test.describe('Exercise 3 Task 3.2 – Dynamic Properties', () => {
     // ─────────────────────────────────────────────────────────────────────
     // STEP 8: INTELLIGENT WAIT – wait until #visibleAfter becomes visible
     // ─────────────────────────────────────────────────────────────────────
-    console.log('⏳ Waiting (conditionally) for #visibleAfter to appear...');
+    console.log('⏳ Waiting for #visibleAfter to appear...');
     await dynProps.waitForVisibleAfterAppears(15_000);
 
     // ─────────────────────────────────────────────────────────────────────
@@ -78,7 +76,7 @@ test.describe('Exercise 3 Task 3.2 – Dynamic Properties', () => {
     // ─────────────────────────────────────────────────────────────────────
     // STEP 10: INTELLIGENT WAIT – wait for color change on #colorChange
     // ─────────────────────────────────────────────────────────────────────
-    console.log('⏳ Waiting (conditionally) for #colorChange button color to change...');
+    console.log('⏳ Waiting for #colorChange button color to change...');
     await dynProps.waitForColorChange(initialColor, 15_000);
 
     // ─────────────────────────────────────────────────────────────────────
@@ -93,13 +91,5 @@ test.describe('Exercise 3 Task 3.2 – Dynamic Properties', () => {
     // ─────────────────────────────────────────────────────────────────────
     await dynProps.clickVisibleAfter();
     console.log('🖱️  Clicked "Visible After 5 Seconds" button successfully');
-
-    // Final summary
-    console.log('\n📊 Dynamic Properties Test Summary:');
-    console.log('  V1 ✅ enableAfter disabled on load');
-    console.log('  V2 ✅ visibleAfter hidden on load');
-    console.log('  V3 ✅ enableAfter enabled after ~5s');
-    console.log('  V4 ✅ visibleAfter visible after ~5s');
-    console.log('  V5 ✅ colorChange button color changed after ~5s');
   });
 });

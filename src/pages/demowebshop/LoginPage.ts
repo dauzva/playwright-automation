@@ -19,13 +19,12 @@ export class LoginPage {
     this.passwordInput    = page.locator('#Password');
     this.loginButton      = page.locator('input[value="Log in"]');
     this.validationSummary = page.locator('.validation-summary-errors');
-    this.accountLink      = page.locator('.account');
+    this.accountLink      = page.locator('.account').first();
   }
 
   /** Navigate directly to the login page */
   async goto(): Promise<void> {
     await this.page.goto('/login');
-    await this.page.waitForLoadState('networkidle');
   }
 
   /**
@@ -37,8 +36,6 @@ export class LoginPage {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
     await this.loginButton.click();
-    // Wait for navigation after login
-    await this.page.waitForLoadState('networkidle');
   }
 
   /** Verify the user is logged in by checking header account link */
@@ -55,6 +52,5 @@ export class LoginPage {
   /** Logout via account dropdown */
   async logout(): Promise<void> {
     await this.page.goto('/logout');
-    await this.page.waitForLoadState('networkidle');
   }
 }

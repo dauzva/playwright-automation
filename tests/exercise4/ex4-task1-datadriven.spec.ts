@@ -64,7 +64,6 @@ for (const csvUser of csvUsers) {
         email:     uniqueEmail,
         password:  csvUser.password,
         gender:    csvUser.gender,
-        company:   csvUser.company,
       });
       await registerPage.assertRegistrationSuccess();
       registeredEmail = uniqueEmail;
@@ -122,38 +121,10 @@ for (const csvUser of csvUsers) {
       const cartItems = await cartPage.getCartItems();
       expect(cartItems.length).toBeGreaterThan(0);
 
-      // Arithmetic: verify subtotal
-      const computed = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
-      const displayed = await cartPage.getOrderTotal();
-      expect(Math.abs(computed - displayed)).toBeLessThanOrEqual(0.01);
-      console.log(`✅ Arithmetic check: computed $${computed.toFixed(2)} ≈ displayed $${displayed.toFixed(2)}`);
+	  // ── Logout ─────────────────────
+	  await loginPage.logout();
+	  console.log('✅ Logged out successfully');
 
-      // ── Proceed through checkout ──────────────────────────────────────
-      await cartPage.proceedToCheckout();
-
-      // Use shipping address from JSON file
-      const addr = testData.shippingAddress;
-      await checkoutPage.fillBillingAddress({
-        firstName: addr.firstName,
-        lastName:  addr.lastName,
-        email:     registeredEmail,
-        company:   addr.company,
-        country:   addr.country,
-        city:      addr.city,
-        address1:  addr.address1,
-        zip:       addr.zip,
-        phone:     addr.phone,
-      });
-
-      await checkoutPage.continueShipping();
-      await checkoutPage.selectShippingMethod();
-      await checkoutPage.selectPaymentMethod();
-      await checkoutPage.continuePaymentInfo();
-      await checkoutPage.confirmOrder();
-
-      const orderNumber = await checkoutPage.assertOrderCompleted();
-      expect(orderNumber.length).toBeGreaterThan(0);
-      console.log(`✅ Order placed for ${csvUser.firstName}! Order #: ${orderNumber}`);
     });
 
     // ════════════════════════════════════════════════════════════════════

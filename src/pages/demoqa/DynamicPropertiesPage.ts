@@ -24,21 +24,6 @@ export class DynamicPropertiesPage {
     this.visibleAfterButton = page.locator('#visibleAfter');
   }
 
-  async goto(): Promise<void> {
-    await this.page.goto('https://demoqa.com/dynamic-properties');
-    await this.page.waitForLoadState('networkidle');
-    await this.dismissAds();
-  }
-
-  private async dismissAds(): Promise<void> {
-    try {
-      const adClose = this.page.locator('#close-fixedban');
-      if (await adClose.isVisible({ timeout: 2000 })) {
-        await adClose.click();
-      }
-    } catch { /* no ad */ }
-  }
-
   /** Returns true if the "Will enable 5 seconds" button is currently disabled */
   async isEnableAfterDisabled(): Promise<boolean> {
     return await this.enableAfterButton.isDisabled();

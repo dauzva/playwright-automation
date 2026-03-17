@@ -65,11 +65,6 @@ export class RegisterPage {
     await this.firstNameInput.fill(data.firstName);
     await this.lastNameInput.fill(data.lastName);
     await this.emailInput.fill(data.email);
-
-    if (data.company) {
-      await this.companyInput.fill(data.company);
-    }
-
     await this.passwordInput.fill(data.password);
     await this.confirmPasswordInput.fill(data.password);
     await this.registerButton.click();

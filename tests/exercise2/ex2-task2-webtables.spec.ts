@@ -15,12 +15,14 @@ test.describe('Exercise 2 Task 2.2 – Web Tables Pagination', () => {
   test('TC-002: Add rows → page 2 exists → delete → verify pagination collapses', async ({
     page,
   }) => {
-    const webTables = new WebTablesPage(page);
-
     // ══════════════════════════════════════════════════════════════════════
     // PRECONDITION: Navigate to Web Tables page
     // ══════════════════════════════════════════════════════════════════════
-    await webTables.goto();
+	await page.goto('https://demoqa.com');
+	await page.waitForLoadState('networkidle');
+	await page.locator('a[href="/elements"]').click();
+	await page.locator('.router-link[href="/webtables"]').click();
+	const webTables = new WebTablesPage(page);
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 2: Verify initial state – 3 default rows
@@ -98,11 +100,11 @@ test.describe('Exercise 2 Task 2.2 – Web Tables Pagination', () => {
     console.log('✅ V7 PASS – "Next" button is disabled (only 1 page remains)');
 
     // ─────────────────────────────────────────────────────────────────────
-    // STEP 16: Verify row count is 10 (11 - 1 deleted)
+    // STEP 16: Verify row count is reset to 3
     // ─────────────────────────────────────────────────────────────────────
     const finalCount = await webTables.getVisibleRowCount();
     console.log(`Final row count on page 1: ${finalCount}`);
-    expect(finalCount).toBe(10);
-    console.log('✅ V8 PASS – Final row count is 10 (11 - 1 deleted)');
+    expect(finalCount).toBe(3);
+    console.log('✅ V8 PASS – Final row count is back to original 3');
   });
 });

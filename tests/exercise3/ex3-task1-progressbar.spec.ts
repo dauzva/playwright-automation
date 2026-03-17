@@ -1,29 +1,30 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page} from '@playwright/test';
 import { ProgressBarPage } from '../../src/pages/demoqa/ProgressBarPage';
 
 /**
  * Exercise 3 – Task 3.1
  * Automates TC-003: Progress Bar – synchronization with conditional waits.
  *
- * ⚠️  ZERO thread-sleep / waitForTimeout calls – only intelligent waits:
- *     • page.waitForFunction()  (polling aria-valuenow)
- *     • locator.waitFor()       (state transitions)
  *
- * Verifications (≥ 2 as required):
+ * Verifications:
  *   V1 – Initial progress is 0
- *   V2 – After Stop, progress is in tolerance range [25, 40]
+ *   V2 – After Stop, progress is in tolerance range [50, 60]
  *   V3 – After full run, progress is 100
  *   V4 – After Reset, progress is 0 again
  *   V5 – "Reset" button appears only at 100%
  */
+
 test.describe('Exercise 3 Task 3.1 – Progress Bar Synchronization', () => {
-  test('TC-003: Start → Stop at ~25% → Resume → 100% → Reset', async ({ page }) => {
-    const progressBar = new ProgressBarPage(page);
+  test('TC-003: Start → Stop at ~50% → Resume → 100% → Reset', async ({ page }) => {
 
     // ══════════════════════════════════════════════════════════════════════
     // PRECONDITION: Navigate to progress bar page
     // ══════════════════════════════════════════════════════════════════════
-    await progressBar.goto();
+	await page.goto('https://demoqa.com');
+	await page.waitForLoadState('networkidle');
+	await page.locator('a[href="/widgets"]').click();
+	await page.locator('.router-link[href="/progress-bar"]').click();
+    const progressBar = new ProgressBarPage(page);
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 2: V1 – Verify initial progress is 0
@@ -46,11 +47,10 @@ test.describe('Exercise 3 Task 3.1 – Progress Bar Synchronization', () => {
     console.log('▶️  Progress bar started – button now shows "Stop"');
 
     // ─────────────────────────────────────────────────────────────────────
-    // STEP 5: INTELLIGENT WAIT – wait until progress ≥ 25%
-    // Uses waitForFunction polling aria-valuenow (no sleep!)
+    // STEP 5: INTELLIGENT WAIT – wait until progress ≥ 50%
     // ─────────────────────────────────────────────────────────────────────
-    console.log('⏳ Waiting (conditionally) for progress ≥ 25%...');
-    await progressBar.waitForProgress(25);
+    console.log('⏳ Waiting for progress ≥ 50%...');
+    await progressBar.waitForProgress(50);
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 6: Click STOP to pause
@@ -60,13 +60,13 @@ test.describe('Exercise 3 Task 3.1 – Progress Bar Synchronization', () => {
     console.log('⏸️  Progress bar stopped');
 
     // ─────────────────────────────────────────────────────────────────────
-    // STEP 7: V2 – Verify progress is in tolerance range [25, 40]
-    // We allow up to 40 to account for the time between "≥25" detection
+    // STEP 7: V2 – Verify progress is in tolerance range [50, 60]
+    // We allow up to 60 to account for the time between "≥50" detection
     // and the Stop click.
     // ─────────────────────────────────────────────────────────────────────
-    await progressBar.assertProgressInRange(25, 40);
+    await progressBar.assertProgressInRange(50, 60);
     const stoppedAt = await progressBar.getProgressValue();
-    console.log(`✅ V2 PASS – Progress stopped at ${stoppedAt}% (expected 25-40%)`);
+    console.log(`✅ V2 PASS – Progress stopped at ${stoppedAt}% (expected 50-60%)`);
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 8: Resume by clicking START again
@@ -78,8 +78,8 @@ test.describe('Exercise 3 Task 3.1 – Progress Bar Synchronization', () => {
     // ─────────────────────────────────────────────────────────────────────
     // STEP 9: INTELLIGENT WAIT – wait until progress reaches 100%
     // ─────────────────────────────────────────────────────────────────────
-    console.log('⏳ Waiting (conditionally) for progress to reach 100%...');
-    await progressBar.waitForCompletion(60_000);
+    console.log('⏳ Waiting for progress to reach 100%...');
+    await progressBar.waitForProgress(100);
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 10: V3 – Verify progress is 100%
@@ -90,7 +90,6 @@ test.describe('Exercise 3 Task 3.1 – Progress Bar Synchronization', () => {
     // ─────────────────────────────────────────────────────────────────────
     // STEP 11: V5 – Verify Reset button appears at 100%
     // ─────────────────────────────────────────────────────────────────────
-    await progressBar.resetButton.waitFor({ state: 'visible', timeout: 5_000 });
     await expect(progressBar.resetButton).toBeVisible();
     console.log('✅ V5 PASS – "Reset" button is visible at 100%');
 

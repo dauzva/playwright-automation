@@ -64,7 +64,7 @@ export class CheckoutPage {
     this.paymentInfoContinueBtn    = page.locator('#payment-info-buttons-container input[value="Continue"]');
     this.confirmOrderBtn           = page.locator('input[value="Confirm"]');
     this.orderCompletedTitle       = page.locator('.title strong');
-    this.orderNumber               = page.locator('.order-number strong');
+    this.orderNumber               = page.locator('li:has-text("Order number:")');
   }
 
   /** Fill the billing address form and click Continue */
@@ -102,10 +102,7 @@ export class CheckoutPage {
   /** Click Continue on shipping address step */
   async continueShipping(): Promise<void> {
     const btn = this.page.locator('#shipping-buttons-container input[value="Continue"]');
-    if (await btn.isVisible()) {
-      await btn.click();
-      await this.page.waitForLoadState('networkidle');
-    }
+    await btn.click();
   }
 
   /** Select the first available shipping method and continue */
@@ -114,7 +111,6 @@ export class CheckoutPage {
     await firstOption.waitFor({ state: 'visible' });
     await firstOption.check();
     await this.shippingMethodContinueBtn.click();
-    await this.page.waitForLoadState('networkidle');
   }
 
   /** Select "Check / Money Order" payment method and continue */
@@ -130,14 +126,12 @@ export class CheckoutPage {
       await this.page.locator('input[name="paymentmethod"]').first().check();
     }
     await this.paymentMethodContinueBtn.click();
-    await this.page.waitForLoadState('networkidle');
   }
 
   /** Continue through payment info step */
   async continuePaymentInfo(): Promise<void> {
     await this.paymentInfoContinueBtn.waitFor({ state: 'visible' });
     await this.paymentInfoContinueBtn.click();
-    await this.page.waitForLoadState('networkidle');
   }
 
   /** Get the order total shown on confirm step */
@@ -151,13 +145,13 @@ export class CheckoutPage {
   async confirmOrder(): Promise<void> {
     await this.confirmOrderBtn.waitFor({ state: 'visible' });
     await this.confirmOrderBtn.click();
-    await this.page.waitForLoadState('networkidle');
   }
 
   /** Assert order completed and return order number */
   async assertOrderCompleted(): Promise<string> {
-    await expect(this.orderCompletedTitle).toContainText('Your order has been successfully processed');
+	await this.page.waitForSelector('.order-completed', { state: 'visible' });
+    await expect(this.orderCompletedTitle).toContainText('Your order has been successfully processed!');
     const orderNumText = (await this.orderNumber.textContent()) ?? '';
-    return orderNumText.trim();
+    return orderNumText.replace('Order number: ', '').trim();
   }
 }

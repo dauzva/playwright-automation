@@ -30,7 +30,6 @@ export class CartPage {
 
   async goto(): Promise<void> {
     await this.page.goto('/cart');
-    await this.page.waitForLoadState('networkidle');
   }
 
   /** Returns all cart items with parsed price/quantity/subtotal */
@@ -41,10 +40,10 @@ export class CartPage {
 
     for (let i = 0; i < count; i++) {
       const row = rows.nth(i);
-      const name     = (await row.locator('.product-name a').textContent())?.trim() ?? '';
-      const priceStr = (await row.locator('.unit-price .product-unit-price').textContent()) ?? '0';
-      const qtyStr   = (await row.locator('.quantity input').inputValue()) ?? '1';
-      const subStr   = (await row.locator('.subtotal .product-subtotal').textContent()) ?? '0';
+      const name 		= await row.locator('td:nth-child(3) .product-name').textContent() ?? 'Unknown Product';
+      const priceStr 	= await row.locator('td:nth-child(4) .product-unit-price').textContent() ?? '0';
+      const qtyStr   = (await row.locator('td:nth-child(5) input').inputValue()) ?? '1';
+      const subStr   = (await row.locator('td:nth-child(6) .product-subtotal').textContent()) ?? '0';
 
       items.push({
         name,
@@ -72,7 +71,6 @@ export class CartPage {
     const count = await removeButtons.count();
     for (let i = count - 1; i >= 0; i--) {
       await removeButtons.nth(i).click();
-      await this.page.waitForLoadState('networkidle');
     }
   }
 
@@ -81,6 +79,5 @@ export class CartPage {
     await this.termsCheckbox.check();
     await expect(this.termsCheckbox).toBeChecked();
     await this.checkoutButton.click();
-    await this.page.waitForLoadState('networkidle');
   }
 }
