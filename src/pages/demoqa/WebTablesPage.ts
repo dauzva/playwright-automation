@@ -89,7 +89,6 @@ export class WebTablesPage {
   async getVisibleRowCount(): Promise<number> {
     const rows = this.tableRows;
     const count = await rows.count();
-    // Only count rows that have actual data (first cell not empty)
     let dataCount = 0;
     for (let i = 0; i < count; i++) {
       const firstCell = await rows.nth(i).locator('td').first().textContent();

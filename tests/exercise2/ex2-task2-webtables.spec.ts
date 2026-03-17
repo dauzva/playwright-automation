@@ -27,6 +27,16 @@ test.describe('Exercise 2 Task 2.2 – Web Tables Pagination', () => {
     // ─────────────────────────────────────────────────────────────────────
     // STEP 2: Verify initial state – 3 default rows
     // ─────────────────────────────────────────────────────────────────────
+    const rows = webTables.tableRows;
+
+	await expect(async () => {
+		const count = await rows.count();
+		if (count !== 3) {
+			throw new Error(`Expected 3 rows (including padding), but found ${count}`);
+		}
+	}).toPass({ timeout: 10_000 });
+	
+
     const initialCount = await webTables.getVisibleRowCount();
     console.log(`Initial row count: ${initialCount}`);
     // demoqa starts with 3 rows
