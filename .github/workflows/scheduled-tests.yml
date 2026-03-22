@@ -4,8 +4,8 @@ name: 🧪 Playwright Automated Tests – Scheduled & On-Demand
 on:
   # Scheduled execution – no human intervention required
   # Runs every day at 08:00 UTC
-  schedule:
-    - cron: '0 8 * * *'       # Daily at 08:00 UTC
+  # schedule:
+  #   - cron: '0 8 * * *'       # Daily at 08:00 UTC
 
   # Manual trigger – allows on-demand runs from GitHub UI
   workflow_dispatch:
